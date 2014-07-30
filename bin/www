@@ -1,0 +1,29 @@
+#!/usr/bin/env node
+var debug = require('debug')('iosocket');
+var app = require('../app');
+
+app.set('port', process.env.PORT || 3000);
+
+var server = app.listen(app.get('port'), function() {
+  debug('Express server listening on port ' + server.address().port);
+});
+
+var socketIO = require('socket.io');
+// クライアントの接続を待つ(IPアドレスとポート番号を結びつける)
+var io = socketIO.listen(server);
+
+// クライアント接続時処理
+io.on('connection', function(socket) {
+  console.log("connection");
+  // メッセージを受けたときの処理
+  socket.on('message', function(data) {
+    // つながっているクライアント全員に送信
+    console.log("message");
+    io.sockets.emit('message', { value: data.value });
+  });
+
+  // クライアントが切断したときの処理
+  socket.on('disconnect', function() {
+    console.log("disconnect");
+  });
+});
