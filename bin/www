@@ -24,7 +24,7 @@ var relativePositions = {
 };
 var idx = Math.floor(Math.random() * positions.length);
 var recentPosition = positions[idx];
-var bossHps = ['1000'];
+var bossHps = ['1000', '10000', '100000'];
 var bossHp = bossHps[Math.floor(Math.random() * bossHps.length)];
 var currentBossHp = bossHp;
 
@@ -69,6 +69,14 @@ io.on('connection', function(socket) {
         username: 'owner',
         message: 'winner: ' + socket.username
       });
+      currentBossHp = bossHps[Math.floor(Math.random() * bossHps.length)];
+      bossHp = currentBossHp;
+
+      setTimeout(function () {
+        io.sockets.emit('new boss', {
+          bossHp: currentBossHp
+        });
+      }, 2000);
     }
   });
 

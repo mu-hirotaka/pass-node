@@ -191,4 +191,8 @@ $(function() {
     $('.boss-hp').animate({width: data.width}, 800);
   });
  
+  socket.on('new boss', function (data) {
+    $('.boss-hp-value').text(data.bossHp);
+    $('.boss-hp').animate({width: '80%'}, 800);
+  });
 });
