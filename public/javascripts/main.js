@@ -9,6 +9,7 @@ $(function() {
 
   var $loginPage = $('.login.page');
   var $chatPage = $('.chat.page');
+  var $passButton = $('.pass-button');
 
   var username;
   var connected = false;
@@ -150,6 +151,15 @@ $(function() {
     $inputMessage.focus();
   });
 
+  $passButton.on('click', function () {
+      addChatMessage({
+        username: username,
+        message: 'pass'
+      });
+      socket.emit('pass', 'pass');
+      $passButton.attr("disabled", "disabled");
+  });
+
   socket.on('login', function (data) {
     connected = true;
     var message = "Welcome to Socket.IO Chat &mdash; ";
@@ -159,6 +169,11 @@ $(function() {
 
   socket.on('new message', function (data) {
     addChatMessage(data);
+  });
+
+  socket.on('pass', function (data) {
+    addChatMessage(data);
+    $passButton.removeAttr("disabled");
   });
 
   socket.on('user joined', function (data) {

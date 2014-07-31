@@ -14,11 +14,20 @@ var io = socketIO.listen(server);
 
 var usernames = {};
 var numUsers = 0;
+var passes = [];
 
 // クライアント接続時処理
 io.on('connection', function(socket) {
   console.log("connection");
   var addedUser = false;
+
+  socket.on('pass', function(data) {
+    passes.push(socket.username);
+    socket.broadcast.emit('pass', {
+      username: socket.username,
+      message: passes.join("->")
+    });
+  });
 
   socket.on('new message', function (data) {
     socket.broadcast.emit('new message', {
