@@ -164,6 +164,8 @@ $(function() {
     connected = true;
     var message = "Welcome to Socket.IO Chat &mdash; ";
     log(message, { prepend: true });
+    $('.sc-position').text(data.position);
+    $('.sc-point').text(data.point);
     addParticipantsMessage(data);
   });
 
@@ -180,5 +182,9 @@ $(function() {
     log(data.username + ' joined');
     addParticipantsMessage(data);
   });
-  
+
+  socket.on('point up', function (data) {
+    $('.sc-point').text(data.point);
+  });
+ 
 });

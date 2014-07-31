@@ -125,4 +125,18 @@ ul {
 .pass-button:disabled {
   background-color: #777 !important;
 }
+.sc-position {
+  text-align: center;
+  font-size: 1.4em;
+  padding: 10px 30px;
+  background-color: #482;
+  width: 100%;
+}
 
+.sc-point {
+  text-align: center;
+  font-size: 1.4em;
+  padding: 10px 30px;
+  background-color: #fff;
+  width: 100%;
+}

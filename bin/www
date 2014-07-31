@@ -15,6 +15,15 @@ var io = socketIO.listen(server);
 var usernames = {};
 var numUsers = 0;
 var passes = [];
+var positions = ['GK', 'DF', 'MF', 'FW'];
+var relativePositions = {
+  'FW' : 'MF',
+  'MF' : 'DF',
+  'DF' : 'GK',
+  'GK' : 'FW'
+};
+var idx = Math.floor(Math.random() * positions.length);
+var recentPosition = positions[idx];
 
 // クライアント接続時処理
 io.on('connection', function(socket) {
@@ -22,10 +31,25 @@ io.on('connection', function(socket) {
   var addedUser = false;
 
   socket.on('pass', function(data) {
-    passes.push(socket.username);
+    passes.push(socket.username + "(" + socket.position + ")");
+    if (recentPosition === relativePositions[socket.position]) {
+      socket.point = socket.point + 1;
+    }
+    var passMessage = "";
+    if (passes.length > 0) {
+      passMessage = passes.join("->");
+    }
+    else {
+      passMessage = passes[0];
+    }
     socket.broadcast.emit('pass', {
       username: socket.username,
-      message: passes.join("->")
+      message: 'pass ' + passMessage
+    });
+    recentPosition = socket.position;
+
+    socket.emit('point up', {
+      point: socket.point
     });
   });
 
@@ -37,12 +61,18 @@ io.on('connection', function(socket) {
   });
 
   socket.on('add user', function (username) {
+    var ridx = Math.floor(Math.random() * positions.length);
     socket.username = username;
+    socket.position = positions[ridx];
+    socket.point = 0;
     usernames[username] = username;
     ++numUsers;
     addedUser = true;
+
     socket.emit('login', {
-      numUsers: numUsers
+      numUsers: numUsers,
+      position: socket.position,
+      point: socket.point
     });
     socket.broadcast.emit('user joined', {
       username: socket.username,
