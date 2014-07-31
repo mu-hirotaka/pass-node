@@ -164,7 +164,7 @@ $(function() {
     connected = true;
     $('.sc-position').text(data.position);
     $('.sc-point').text(data.point);
-    $('.boss-hp').text(data.bossHp);
+    $('.boss-hp-value').text(data.bossHp);
     addParticipantsMessage(data);
   });
 
@@ -187,7 +187,8 @@ $(function() {
   });
  
   socket.on('boss damaged', function (data) {
-    $('.boss-hp').text(data.after);
+    $('.boss-hp-value').text(data.after);
+    $('.boss-hp').animate({width: data.width}, 800);
   });
  
 });

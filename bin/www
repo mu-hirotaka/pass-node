@@ -58,9 +58,11 @@ io.on('connection', function(socket) {
     if (currentBossHp < 0) {
       currentBossHp = 0;
     }
+    damage_width = Math.floor(currentBossHp/bossHp * 100 * 0.8);
     io.sockets.emit('boss damaged', {
       before: tmpCurrentBossHp,
       after: currentBossHp,
+      width: damage_width + "%"
     });
     if (currentBossHp == 0) {
       io.sockets.emit('new message', {
