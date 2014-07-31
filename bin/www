@@ -24,6 +24,9 @@ var relativePositions = {
 };
 var idx = Math.floor(Math.random() * positions.length);
 var recentPosition = positions[idx];
+var bossHps = ['1000'];
+var bossHp = bossHps[Math.floor(Math.random() * bossHps.length)];
+var currentBossHp = bossHp;
 
 // クライアント接続時処理
 io.on('connection', function(socket) {
@@ -32,15 +35,13 @@ io.on('connection', function(socket) {
 
   socket.on('pass', function(data) {
     passes.push(socket.username + "(" + socket.position + ")");
+    socket.point += 1;
     if (recentPosition === relativePositions[socket.position]) {
-      socket.point = socket.point + 1;
+      socket.point = socket.point + socket.point * 5;
     }
-    var passMessage = "";
+    var passMessage = passes[0];
     if (passes.length > 0) {
       passMessage = passes.join("->");
-    }
-    else {
-      passMessage = passes[0];
     }
     socket.broadcast.emit('pass', {
       username: socket.username,
@@ -51,6 +52,22 @@ io.on('connection', function(socket) {
     socket.emit('point up', {
       point: socket.point
     });
+
+    tmpCurrentBossHp = currentBossHp;
+    currentBossHp -= socket.point;
+    if (currentBossHp < 0) {
+      currentBossHp = 0;
+    }
+    io.sockets.emit('boss damaged', {
+      before: tmpCurrentBossHp,
+      after: currentBossHp,
+    });
+    if (currentBossHp == 0) {
+      io.sockets.emit('new message', {
+        username: 'owner',
+        message: 'winner: ' + socket.username
+      });
+    }
   });
 
   socket.on('new message', function (data) {
@@ -72,7 +89,8 @@ io.on('connection', function(socket) {
     socket.emit('login', {
       numUsers: numUsers,
       position: socket.position,
-      point: socket.point
+      point: socket.point,
+      bossHp: currentBossHp
     });
     socket.broadcast.emit('user joined', {
       username: socket.username,

@@ -162,10 +162,9 @@ $(function() {
 
   socket.on('login', function (data) {
     connected = true;
-    var message = "Welcome to Socket.IO Chat &mdash; ";
-    log(message, { prepend: true });
     $('.sc-position').text(data.position);
     $('.sc-point').text(data.point);
+    $('.boss-hp').text(data.bossHp);
     addParticipantsMessage(data);
   });
 
@@ -185,6 +184,10 @@ $(function() {
 
   socket.on('point up', function (data) {
     $('.sc-point').text(data.point);
+  });
+ 
+  socket.on('boss damaged', function (data) {
+    $('.boss-hp').text(data.after);
   });
  
 });
